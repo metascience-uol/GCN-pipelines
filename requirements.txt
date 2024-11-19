@@ -1,0 +1,14 @@
+# Python 3.8.0
+numpy
+scipy
+pandas
+seaborn
+fastdtw
+chardet
+networkx
+openpyxl
+tensorflow
+matplotlib
+Levenshtein
+scikit-learn
+stellargraph[demos]
