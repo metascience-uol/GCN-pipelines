@@ -1,5 +1,5 @@
 # Ordering information was provided. The ordered decisions for this universe are:
-forking_paths = {'preprocessing': 'hcp_minimal', 'parcellation': 'schaefer_400', 'cleaning': 'motion', 'filtering': False, 'graph_measure': 'global_efficiency'}
+forking_paths = {'preprocessing': 'hcp_minimal', 'parcellation': 'schaefer_400', 'cleaning': 'motion_wm_csf', 'filtering': False, 'graph_measure': 'global_efficiency'}
 
 import pandas as pd
 import numpy as np
@@ -24,7 +24,7 @@ for i, subject in enumerate(subjects):
     
     # Create confounds data frame
     if forking_paths.get("cleaning"):
-        if forking_paths["cleaning"] == "motion":
+        if forking_paths["cleaning"] == "motion_wm_csf":
             confounds_df = pd.concat([confounds_movement, confounds_csf, confounds_wm], axis=1)
         elif forking_paths["cleaning"] == "gsr":
             confounds_df = pd.DataFrame()

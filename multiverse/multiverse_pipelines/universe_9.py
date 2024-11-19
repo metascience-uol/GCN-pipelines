@@ -16,6 +16,7 @@ for i, subject in enumerate(subjects):
     # Get fmri data
     dtseries = f"{datadir}/Data/{subject}/LR/rfMRI_REST1_LR_Atlas_MSMAll_hp2000_clean.dtseries.nii"
     ts = nib.load(dtseries).get_fdata() 
+    print("done loading data")
     
     # Get confounds
     confounds_movement = pd.read_csv(f"{datadir}/Regressors_all/{subject}/rfMRI_REST1_LR/Movement_Regressors.txt", sep="\s+", header=None)
@@ -24,7 +25,7 @@ for i, subject in enumerate(subjects):
     
     # Create confounds data frame
     if forking_paths.get("cleaning"):
-        if forking_paths["cleaning"] == "motion":
+        if forking_paths["cleaning"] == "motion_wm_csf":
             confounds_df = pd.concat([confounds_movement, confounds_csf, confounds_wm], axis=1)
         elif forking_paths["cleaning"] == "gsr":
             confounds_df = pd.DataFrame()

@@ -4,7 +4,7 @@ from comet import multiverse
 forking_paths = {
     "preprocessing": ["hcp_minimal"],
     "parcellation": ["schaefer_400"],
-    "cleaning": ("gsr", "motion", "combined"),
+    "cleaning": ("gsr", "motion_wm_csf", "combined"),
     "filtering": [True, False],
     "graph_measure": ["global_efficiency"]
 }
@@ -41,7 +41,7 @@ def analysis_template():
         
         # Create confounds data frame
         if forking_paths.get("cleaning"):
-            if forking_paths["cleaning"] == "motion":
+            if forking_paths["cleaning"] == "motion_wm_csf":
                 confounds_df = pd.concat([confounds_movement, confounds_csf, confounds_wm], axis=1)
             elif forking_paths["cleaning"] == "gsr":
                 confounds_df = pd.DataFrame()
@@ -67,7 +67,7 @@ def analysis_template():
             if key == "parcellation":
                 ts = cifti.parcellate(ts, atlas="schaefer_400_cortical")
             if key == "cleaning":
-                ts = signal.clean(ts, detrend=True, standardize="zscore_sample", confounds=confounds_df, standardize_confounds="zscore_sample", low_pass=low_pass, high_pass=high_pass)
+                ts = signal.clean(ts, detrend=True, standardize="zscore_sample", confounds=confounds_df, standardize_confounds="zscore_sample", t_r=0.72, low_pass=low_pass, high_pass=high_pass)
         
         # Graph construction
         fc = connectivity.Static_Pearson(ts).estimate()
@@ -84,4 +84,4 @@ def analysis_template():
 mverse = multiverse.Multiverse(name="multiverse_pipelines")
 
 mverse.create(analysis_template, forking_paths, config)
-mverse.run(parallel=14)
+#mverse.run(parallel=14)

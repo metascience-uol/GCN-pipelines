@@ -24,7 +24,7 @@ for i, subject in enumerate(subjects):
     
     # Create confounds data frame
     if forking_paths.get("cleaning"):
-        if forking_paths["cleaning"] == "motion":
+        if forking_paths["cleaning"] == "motion_wm_csf":
             confounds_df = pd.concat([confounds_movement, confounds_csf, confounds_wm], axis=1)
         elif forking_paths["cleaning"] == "gsr":
             confounds_df = pd.DataFrame()

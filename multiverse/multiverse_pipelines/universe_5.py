@@ -1,5 +1,5 @@
 # Ordering information was provided. The ordered decisions for this universe are:
-forking_paths = {'preprocessing': 'hcp_minimal', 'parcellation': 'schaefer_400', 'cleaning': 'motion', 'filtering': True, 'graph_measure': 'global_efficiency'}
+forking_paths = {'preprocessing': 'hcp_minimal', 'parcellation': 'schaefer_400', 'cleaning': 'motion_wm_csf', 'filtering': True, 'graph_measure': 'global_efficiency'}
 
 import pandas as pd
 import numpy as np
@@ -24,7 +24,7 @@ for i, subject in enumerate(subjects):
     
     # Create confounds data frame
     if forking_paths.get("cleaning"):
-        if forking_paths["cleaning"] == "motion":
+        if forking_paths["cleaning"] == "motion_wm_csf":
             confounds_df = pd.concat([confounds_movement, confounds_csf, confounds_wm], axis=1)
         elif forking_paths["cleaning"] == "gsr":
             confounds_df = pd.DataFrame()
@@ -50,7 +50,7 @@ for i, subject in enumerate(subjects):
         if key == "parcellation":
             ts = cifti.parcellate(ts, atlas="schaefer_400_cortical")
         if key == "cleaning":
-            ts = signal.clean(ts, detrend=True, standardize="zscore_sample", confounds=confounds_df, standardize_confounds="zscore_sample", low_pass=low_pass, high_pass=high_pass)
+            ts = signal.clean(ts, detrend=True, standardize="zscore_sample", confounds=confounds_df, standardize_confounds="zscore_sample", low_pass=low_pass, high_pass=high_pass,)
     
     # Graph construction
     fc = connectivity.Static_Pearson(ts).estimate()

@@ -25,7 +25,6 @@ for subject in subject_dirs:
 print("Available subjects:", len(complete_subjects))
 
 # Randomly choose 100 subjects
-random.seed(42)  # Set seed for reproducibility
 selected_subjects = random.sample(complete_subjects, min(100, len(complete_subjects)))
 
 # Save the selected subject IDs to a text file
