@@ -1,6 +1,7 @@
 # Ordering information was provided. The ordered decisions for this universe are:
 forking_paths = {'preprocessing': 'hcp_minimal', 'cleaning': 'combined', 'parcellation': 'schaefer_400', 'filtering': False, 'graph_measure': 'global_efficiency'}
 
+import os
 import pandas as pd
 import numpy as np
 import nibabel as nib
@@ -8,8 +9,10 @@ from matplotlib import pyplot as plt
 from comet import cifti, graph, connectivity, utils
 from nilearn import signal
 
-datadir = "/mnt/hpc_daniel"
-subjects = np.loadtxt("/home/mibur/GCN-pipelines/multiverse/subjects.txt").astype(int)
+datadir = "/mnt/hpc_daniel" # IMPORTANT: This needs to be the path to the HCP data on your system
+subjects_list = "/home/mibur/GCN-pipelines/multiverse/data/subjects.txt" # IMPORTANT: This needs to be the path to the subjects list
+    
+subjects = np.loadtxt(subjects_list).astype(int) 
 global_eff = {}
 
 for i, subject in enumerate(subjects):
@@ -50,7 +53,7 @@ for i, subject in enumerate(subjects):
         if key == "parcellation":
             ts = cifti.parcellate(ts, atlas="schaefer_400_cortical")
         if key == "cleaning":
-            ts = signal.clean(ts, detrend=True, standardize="zscore_sample", confounds=confounds_df, standardize_confounds="zscore_sample", low_pass=low_pass, high_pass=high_pass)
+            ts = signal.clean(ts, detrend=True, standardize="zscore_sample", confounds=confounds_df, standardize_confounds="zscore_sample", t_r=0.72, low_pass=low_pass, high_pass=high_pass)
     
     # Graph construction
     fc = connectivity.Static_Pearson(ts).estimate()

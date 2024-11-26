@@ -1,7 +1,6 @@
 import pandas as pd
 
-
-file_path = 'Data/Database_clean.xlsx'
+file_path = '"/home/mibur/GCN-pipelines/data/Database_clean.xlsx'
 df = pd.read_excel(file_path, sheet_name='Sheet1')
 
 # Combined use

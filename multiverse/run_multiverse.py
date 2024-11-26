@@ -18,6 +18,7 @@ config = {
 }
 
 def analysis_template():
+    import os
     import pandas as pd
     import numpy as np
     import nibabel as nib
@@ -25,8 +26,10 @@ def analysis_template():
     from comet import cifti, graph, connectivity, utils
     from nilearn import signal
 
-    datadir = "/mnt/hpc_daniel"
-    subjects = np.loadtxt("/home/mibur/GCN-pipelines/multiverse/subjects.txt").astype(int)
+    datadir = "/mnt/hpc_daniel" # IMPORTANT: This needs to be the path to the HCP data on your system
+    subjects_list = "/home/mibur/GCN-pipelines/multiverse/data/subjects.txt" # IMPORTANT: This needs to be the path to the subjects list
+    
+    subjects = np.loadtxt(subjects_list).astype(int) 
     global_eff = {}
 
     for i, subject in enumerate(subjects):

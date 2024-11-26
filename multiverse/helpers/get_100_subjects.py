@@ -3,7 +3,7 @@ import random
 import numpy as np
 
 datadir = "/mnt/hpc_daniel"
-output_file = "/home/mibur/GCN-pipelines/multiverse/subjects.txt"
+output_file = "/home/mibur/GCN-pipelines/multiverse/data/subjects.txt"
 
 subject_dirs = [name for name in os.listdir(f"{datadir}/Data") if os.path.isdir(os.path.join(f"{datadir}/Data", name)) and name.isdigit()]
 complete_subjects = []
