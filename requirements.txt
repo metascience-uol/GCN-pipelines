@@ -9,6 +9,7 @@ networkx
 openpyxl
 tensorflow
 matplotlib
+ptitprince
 Levenshtein
 scikit-learn
 stellargraph[demos]
