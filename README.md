@@ -17,7 +17,7 @@ To re-run the multiverse analysis, a separate environment with Python 3.11 is re
 ```
 conda create -n gcn-multiverse python==3.11
 conda activate gcn-multiverse
-pip install comet-toolbox pandas numpy matplotlib nilearn nibabel
+pip install -r requirements_multiverse.txt
 ```
 
 ## Usage

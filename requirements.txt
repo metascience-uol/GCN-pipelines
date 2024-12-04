@@ -14,4 +14,3 @@ levenshtein
 scikit-learn
 stellargraph[demos]
 textdistance
-#comet-toolbox
