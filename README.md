@@ -4,14 +4,24 @@ Quantifying similarities between fMRI processing pipelines for efficient multive
 
 ## Installation
 
-We recommend using a dedicated Python environment (e.g. through conda) to mitigate the risk of potential version conflicts:
+As stellargraph requires Python 3.8, we recommend using a dedicated environment (e.g. through conda):
+
 ```
 conda create -n gcn-piplines python==3.8.0
 conda activate gcn-piplines
 pip install -r requirements.txt
 ```
 
+To re-run the multiverse analysis, a separate environment with Python 3.11 is required:
+
+```
+conda create -n gcn-multiverse python==3.11
+conda activate gcn-multiverse
+pip install comet-toolbox pandas numpy matplotlib nilearn nibabel
+```
+
 ## Usage
 
-- The main script which reproduces the results from the paper is located in `main.ipynb`
-- The multiverse analysis is located in `mverse.py`
+- The main script which reproduces the results fom the paper is located in `evaluate_gcn.ipynb`
+- The multiverse analysis can be performed by running `multiverse/run_multiverse.py`
+- The results from multiverse analysis are visualized in `evaluate_multiverse.ipynb`

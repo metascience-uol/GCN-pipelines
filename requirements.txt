@@ -10,6 +10,8 @@ openpyxl
 tensorflow
 matplotlib
 ptitprince
-Levenshtein
+levenshtein
 scikit-learn
 stellargraph[demos]
+textdistance
+#comet-toolbox
