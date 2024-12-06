@@ -4,16 +4,15 @@ from comet import multiverse
 forking_paths = {
     "preprocessing": ["hcp_minimal"],
     "parcellation": ["schaefer_400"],
-    "cleaning": ("gsr", "motion_wm_csf", "combined"),
+    "confounds": ("none", "gsr", "motion_wm_csf", "combined"),
     "filtering": [True, False],
     "graph_measure": ["global_efficiency"]
 }
 
 config = {
     "order": [
-        ("preprocessing", "parcellation", "filtering", "graph_measure"),
-        ("preprocessing", "parcellation", "cleaning", "filtering", "graph_measure"),
-        ("preprocessing", "cleaning", "parcellation", "filtering", "graph_measure"),
+        ("preprocessing", "parcellation", "confounds", "filtering", "graph_measure"),
+        ("preprocessing", "confounds", "parcellation", "filtering", "graph_measure"),
     ]
 }
 
@@ -43,17 +42,19 @@ def analysis_template():
         confounds_wm = pd.read_csv(f"{datadir}/Regressors_all/{subject}/rfMRI_REST1_LR/rfMRI_REST1_LR_WM.txt", sep="\s+", header=None)
         
         # Create confounds data frame
-        if forking_paths.get("cleaning"):
-            if forking_paths["cleaning"] == "motion_wm_csf":
+        if forking_paths.get("confounds"):
+            if forking_paths["confounds"] == "motion_wm_csf":
                 confounds_df = pd.concat([confounds_movement, confounds_csf, confounds_wm], axis=1)
-            elif forking_paths["cleaning"] == "gsr":
+            elif forking_paths["confounds"] == "gsr":
                 confounds_df = pd.DataFrame()
                 confounds_df["global_signal"] = np.mean(ts, axis=1)
-            elif forking_paths["cleaning"] == "combined":
+            elif forking_paths["confounds"] == "combined":
                 confounds_df = pd.concat([confounds_movement, confounds_csf, confounds_wm], axis=1)
                 confounds_df["global_signal"] = np.mean(ts, axis=1)
+            elif forking_paths["confounds"] == "none":
+                confounds_df = None
             else:
-                raise ValueError("Invalid cleaning method")
+                raise ValueError("Invalid confounds provided")
         
         # Create filtering variables
         if forking_paths.get("filtering"):
@@ -65,11 +66,11 @@ def analysis_template():
 
         # Actual pipeline.
         # The pipeline is ordered according to the the forking_paths dictionary,
-        # so this will account for the switch in order between cleaning and parcellation
+        # so this will account for the switch in order between confounds regression and parcellation
         for key in forking_paths:
-            if key == "parcellation":
+            if key == "parcellation" and forking_paths["parcellation"] != "none":
                 ts = cifti.parcellate(ts, atlas="schaefer_400_cortical")
-            if key == "cleaning":
+            if key == "confounds":
                 ts = signal.clean(ts, detrend=True, standardize="zscore_sample", confounds=confounds_df, standardize_confounds="zscore_sample", t_r=0.72, low_pass=low_pass, high_pass=high_pass)
         
         # Graph construction

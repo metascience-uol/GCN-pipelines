@@ -1,5 +1,5 @@
 # Ordering information was provided. The ordered decisions for this universe are:
-forking_paths = {'preprocessing': 'hcp_minimal', 'cleaning': 'none', 'parcellation': 'schaefer_400', 'filtering': True, 'graph_measure': 'global_efficiency'}
+forking_paths = {'preprocessing': 'hcp_minimal', 'cleaning': 'combined', 'parcellation': 'schaefer_400', 'filtering': True, 'graph_measure': 'global_efficiency'}
 
 import os
 import pandas as pd
