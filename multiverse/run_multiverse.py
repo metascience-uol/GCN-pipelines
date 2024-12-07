@@ -25,10 +25,10 @@ def analysis_template():
     from comet import cifti, graph, connectivity, utils
     from nilearn import signal
 
-    datadir = "/mnt/hpc_daniel" # IMPORTANT: This needs to be the path to the HCP data on your system
-    subjects_list = "/home/mibur/GCN-pipelines/multiverse/data/subjects.txt" # IMPORTANT: This needs to be the path to the subjects list
+    datadir = "/gss/work/wowi8711/cifti_HCP" # IMPORTANT: This needs to be the path to the HCP data on your system
+    subjects_list = "/gss/work/zead9360/GCN-pipelines/multiverse/data/subjects.txt" # IMPORTANT: This needs to be the path to a list of subject IDs
     
-    subjects = np.loadtxt(subjects_list).astype(int) 
+    subjects = np.loadtxt(subjects_list).astype(int)
     global_eff = {}
 
     for i, subject in enumerate(subjects):
@@ -64,11 +64,11 @@ def analysis_template():
             high_pass = None
             low_pass = None
 
-        # Actual pipeline.
+        # Actual pipeline:
         # The pipeline is ordered according to the the forking_paths dictionary,
         # so this will account for the switch in order between confounds regression and parcellation
         for key in forking_paths:
-            if key == "parcellation" and forking_paths["parcellation"] != "none":
+            if key == "parcellation":
                 ts = cifti.parcellate(ts, atlas="schaefer_400_cortical")
             if key == "confounds":
                 ts = signal.clean(ts, detrend=True, standardize="zscore_sample", confounds=confounds_df, standardize_confounds="zscore_sample", t_r=0.72, low_pass=low_pass, high_pass=high_pass)
@@ -81,11 +81,11 @@ def analysis_template():
         # Global efficiency estimation
         global_eff[str(subject)] = graph.efficiency(fc, local=False)
         print(f"Subject {i+1}/100 done. Global efficiency: {global_eff[str(subject)]}")
-
-    utils.save_universe_results(global_eff)
+        
+    utils.save_universe_results(global_eff, universe=os.path.abspath(__file__))
     
 # Create and run multiverse
 mverse = multiverse.Multiverse(name="multiverse_pipelines")
 
 mverse.create(analysis_template, forking_paths, config)
-#mverse.run(parallel=14)
+mverse.run(parallel=16)

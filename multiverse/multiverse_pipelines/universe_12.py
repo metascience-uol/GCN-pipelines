@@ -1,5 +1,5 @@
 # Ordering information was provided. The ordered decisions for this universe are:
-forking_paths = {'preprocessing': 'hcp_minimal', 'cleaning': 'gsr', 'parcellation': 'schaefer_400', 'filtering': False, 'graph_measure': 'global_efficiency'}
+forking_paths = {'preprocessing': 'hcp_minimal', 'confounds': 'gsr', 'parcellation': 'schaefer_400', 'filtering': False, 'graph_measure': 'global_efficiency'}
 
 import os
 import pandas as pd
@@ -9,10 +9,10 @@ from matplotlib import pyplot as plt
 from comet import cifti, graph, connectivity, utils
 from nilearn import signal
 
-datadir = "/mnt/hpc_daniel" # IMPORTANT: This needs to be the path to the HCP data on your system
-subjects_list = "/home/mibur/GCN-pipelines/multiverse/data/subjects.txt" # IMPORTANT: This needs to be the path to the subjects list
+datadir = "/gss/work/wowi8711/cifti_HCP" # IMPORTANT: This needs to be the path to the HCP data on your system
+subjects_list = "/gss/work/zead9360/GCN-pipelines/multiverse/data/subjects_old_14.txt" # IMPORTANT: This needs to be the path to a list of subject IDs
     
-subjects = np.loadtxt(subjects_list).astype(int) 
+subjects = np.loadtxt(subjects_list).astype(int)
 global_eff = {}
 
 for i, subject in enumerate(subjects):
@@ -26,19 +26,19 @@ for i, subject in enumerate(subjects):
     confounds_wm = pd.read_csv(f"{datadir}/Regressors_all/{subject}/rfMRI_REST1_LR/rfMRI_REST1_LR_WM.txt", sep="\s+", header=None)
     
     # Create confounds data frame
-    if forking_paths.get("cleaning"):
-        if forking_paths["cleaning"] == "motion_wm_csf":
+    if forking_paths.get("confounds"):
+        if forking_paths["confounds"] == "motion_wm_csf":
             confounds_df = pd.concat([confounds_movement, confounds_csf, confounds_wm], axis=1)
-        elif forking_paths["cleaning"] == "gsr":
+        elif forking_paths["confounds"] == "gsr":
             confounds_df = pd.DataFrame()
             confounds_df["global_signal"] = np.mean(ts, axis=1)
-        elif forking_paths["cleaning"] == "combined":
+        elif forking_paths["confounds"] == "combined":
             confounds_df = pd.concat([confounds_movement, confounds_csf, confounds_wm], axis=1)
             confounds_df["global_signal"] = np.mean(ts, axis=1)
-        elif forking_paths["cleaning"] == "none":
+        elif forking_paths["confounds"] == "none":
             confounds_df = None
         else:
-            raise ValueError("Invalid cleaning method")
+            raise ValueError("Invalid confounds provided")
     
     # Create filtering variables
     if forking_paths.get("filtering"):
@@ -48,13 +48,13 @@ for i, subject in enumerate(subjects):
         high_pass = None
         low_pass = None
 
-    # Actual pipeline.
+    # Actual pipeline:
     # The pipeline is ordered according to the the forking_paths dictionary,
-    # so this will account for the switch in order between cleaning and parcellation
+    # so this will account for the switch in order between confounds regression and parcellation
     for key in forking_paths:
-        if key == "parcellation" and forking_paths["parcellation"] != "none":
+        if key == "parcellation":
             ts = cifti.parcellate(ts, atlas="schaefer_400_cortical")
-        if key == "cleaning":
+        if key == "confounds":
             ts = signal.clean(ts, detrend=True, standardize="zscore_sample", confounds=confounds_df, standardize_confounds="zscore_sample", t_r=0.72, low_pass=low_pass, high_pass=high_pass)
     
     # Graph construction
@@ -65,5 +65,5 @@ for i, subject in enumerate(subjects):
     # Global efficiency estimation
     global_eff[str(subject)] = graph.efficiency(fc, local=False)
     print(f"Subject {i+1}/100 done. Global efficiency: {global_eff[str(subject)]}")
-
-utils.save_universe_results(global_eff)
+    
+utils.save_universe_results(global_eff, universe=os.path.abspath(__file__))
